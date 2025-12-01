@@ -1,0 +1,204 @@
+﻿<UserControl x:Class="Presentation.Views.DepartmentAssignmentView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Presentation.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Encabezado y botones de acción -->
+        <Grid Grid.Row="0" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" 
+                      Text="Asignación de Usuarios a Departamentos" 
+                      FontSize="20" 
+                      FontWeight="Bold"
+                      VerticalAlignment="Center"/>
+
+            <Button Grid.Column="1" 
+                    Content="🔄 Actualizar Todo" 
+                    Command="{Binding RefreshAllCommand}"
+                    Padding="10,5"
+                    Background="#FF2196F3"
+                    Foreground="White"/>
+        </Grid>
+
+        <!-- Contenido principal -->
+        <Grid Grid.Row="1" Margin="0,10,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Panel de Usuarios -->
+            <GroupBox Grid.Column="0" Header="👥 Usuarios Disponibles">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Búsqueda de usuarios -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                                Width="200" 
+                                Height="25" 
+                                Margin="0,0,5,0"
+                                Padding="5"
+                                VerticalContentAlignment="Center"/>
+                        <Button Content="🔍 Buscar" 
+                                Command="{Binding SearchUsersCommand}"
+                                Padding="10,5" 
+                                Margin="0,0,5,0"/>
+                        <Button Content="🗑️ Limpiar" 
+                                Command="{Binding ClearSearchCommand}"
+                                Padding="10,5"/>
+                    </StackPanel>
+
+                    <!-- Lista de usuarios -->
+                    <DataGrid Grid.Row="1" 
+                             ItemsSource="{Binding Users}" 
+                             SelectedItem="{Binding SelectedUser}"
+                             AutoGenerateColumns="False"
+                             IsReadOnly="True"
+                             SelectionMode="Single"
+                             SelectionUnit="FullRow">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="40"/>
+                            <DataGridTextColumn Header="Nombre" Binding="{Binding FirstName}" Width="80"/>
+                            <DataGridTextColumn Header="Apellido" Binding="{Binding LastName}" Width="80"/>
+                            <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="150"/>
+                            <DataGridTextColumn Header="Identificación" Binding="{Binding IdentificationNumber}" Width="100"/>
+                        </DataGrid.Columns>
+
+                        <!-- Estilo para resaltar la selección -->
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#FF1976D2"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
+                    </DataGrid>
+                </Grid>
+            </GroupBox>
+
+            <!-- Panel central con botón de asignación -->
+            <StackPanel Grid.Column="1" 
+                       Orientation="Vertical" 
+                       VerticalAlignment="Center" 
+                       HorizontalAlignment="Center"
+                       Margin="20,0">
+
+                <!-- Indicador de usuario seleccionado -->
+                <Border Background="#FFE3F2FD" 
+                        BorderBrush="#FF2196F3" 
+                        BorderThickness="1"
+                        CornerRadius="5"
+                        Padding="10,5"
+                        Margin="0,0,0,10"
+                        Visibility="{Binding SelectedUser, Converter={StaticResource NullToVisibilityConverter}}">
+                    <TextBlock Text="{Binding SelectedUser.FirstName, StringFormat='Usuario: {0}'}" 
+                              FontWeight="SemiBold"
+                              HorizontalAlignment="Center"/>
+                </Border>
+
+                <Button Content="⬇️ ASIGNAR ⬇️" 
+                        Command="{Binding AssignUserToDepartmentCommand}"
+                        Padding="20,10" 
+                        FontWeight="Bold"
+                        FontSize="12"
+                        Background="{Binding CanAssignUser, Converter={StaticResource BooleanToBrushConverter}}"
+                        Foreground="White"
+                        IsEnabled="{Binding CanAssignUser}"
+                        ToolTip="Asignar usuario seleccionado al departamento seleccionado">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#FF757575"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsEnabled" Value="True">
+                                    <Setter Property="Background" Value="#FF4CAF50"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <!-- Indicador de departamento seleccionado -->
+                <Border Background="#FFE8F5E8" 
+                        BorderBrush="#FF4CAF50" 
+                        BorderThickness="1"
+                        CornerRadius="5"
+                        Padding="10,5"
+                        Margin="0,10,0,0"
+                        Visibility="{Binding SelectedDepartment, Converter={StaticResource NullToVisibilityConverter}}">
+                    <TextBlock Text="{Binding SelectedDepartment.Name, StringFormat='Departamento: {0}'}" 
+                              FontWeight="SemiBold"
+                              HorizontalAlignment="Center"/>
+                </Border>
+            </StackPanel>
+
+            <!-- Panel de Departamentos -->
+            <GroupBox Grid.Column="2" Header="🏢 Departamentos Disponibles">
+                <DataGrid ItemsSource="{Binding Departments}" 
+                         SelectedItem="{Binding SelectedDepartment}"
+                         AutoGenerateColumns="False"
+                         IsReadOnly="True"
+                         SelectionMode="Single"
+                         SelectionUnit="FullRow">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="40"/>
+                        <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="120"/>
+                        <DataGridTextColumn Header="Descripción" Binding="{Binding Description}" Width="200"/>
+                    </DataGrid.Columns>
+
+                    <!-- Estilo para resaltar la selección -->
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#FF4CAF50"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.CellStyle>
+                </DataGrid>
+            </GroupBox>
+        </Grid>
+
+        <!-- Mensaje de estado -->
+        <Border Grid.Row="2" 
+                Background="{Binding StatusMessage, Converter={StaticResource StatusMessageToBackgroundConverter}}"
+                BorderBrush="LightGray" 
+                BorderThickness="1"
+                Padding="10,5"
+                CornerRadius="5">
+            <TextBlock Text="{Binding StatusMessage}"
+                      FontStyle="Italic"
+                      TextWrapping="Wrap"
+                      TextAlignment="Center"
+                      Foreground="{Binding StatusMessage, Converter={StaticResource StatusMessageToForegroundConverter}}"/>
+        </Border>
+    </Grid>
+</UserControl>

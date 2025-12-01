@@ -1,0 +1,35 @@
+﻿<Window x:Class="Presentation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Presentation.Views"
+        xmlns:converters="clr-namespace:Presentation.Converters"
+        mc:Ignorable="d"
+        Title="AXA Partners - Sistema de Gestión" 
+        Height="700" 
+        Width="1000"
+        WindowStartupLocation="CenterScreen">
+    
+    <Window.Resources>
+        <converters:StatusMessageToBackgroundConverter x:Key="StatusMessageToBackgroundConverter"/>
+        <converters:StatusMessageToForegroundConverter x:Key="StatusMessageToForegroundConverter"/>
+    </Window.Resources>
+
+    <TabControl>
+        <!-- Pestaña 1: Gestión de Usuarios -->
+        <TabItem Header="👥 Gestión de Usuarios">
+            <views:UserManagementView DataContext="{Binding UserManagementViewModel}"/>
+        </TabItem>
+
+        <!-- Pestaña 2: Asignación de Departamentos -->
+        <TabItem Header="🏢 Asignación de Departamentos">
+            <views:DepartmentAssignmentView DataContext="{Binding DepartmentAssignmentViewModel}"/>
+        </TabItem>
+
+        <!-- NUEVA PESTAÑA: Asignaciones Actuales -->
+        <TabItem Header="📊 Asignaciones Actuales">
+            <views:UserAssignmentsView DataContext="{Binding UserAssignmentsViewModel}"/>
+        </TabItem>
+    </TabControl>
+</Window>

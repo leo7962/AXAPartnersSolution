@@ -1,0 +1,151 @@
+﻿<UserControl x:Class="Presentation.Views.UserAssignmentsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Presentation.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Encabezado -->
+        <TextBlock Grid.Row="0" Text="📊 Asignaciones Actuales de Usuarios a Departamentos" 
+                  FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <!-- Controles de búsqueda y acción -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Búsqueda -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                        Width="250" 
+                        Height="25" 
+                        Margin="0,0,5,0"
+                        Padding="5"
+                        VerticalContentAlignment="Center"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}"/>
+                <Button Content="🔍 Buscar" 
+                        Command="{Binding SearchAssignmentsCommand}"
+                        Padding="10,5" 
+                        Margin="0,0,5,0"
+                        IsEnabled="{Binding CanSearchAssignments}"/>
+                <Button Content="🗑️ Limpiar" 
+                        Command="{Binding ClearSearchCommand}"
+                        Padding="10,5"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}"/>
+            </StackPanel>
+
+            <!-- Botones de acción -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Content="📥 Cargar Datos" 
+                        Command="{Binding LoadDataCommand}"
+                        Padding="10,5" 
+                        Margin="0,0,5,0"
+                        IsEnabled="{Binding CanLoadData}"/>
+
+                <Button Content="❌ Eliminar Asignación" 
+                        Command="{Binding RemoveAssignmentCommand}"
+                        Padding="10,5"
+                        Background="#FFD32F2F"
+                        Foreground="White"
+                        IsEnabled="{Binding CanRemoveAssignment}"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Indicador de carga -->
+        <Border Grid.Row="2" 
+                Background="#FFF5F5F5" 
+                BorderBrush="#FF2196F3" 
+                BorderThickness="1"
+                Padding="20"
+                CornerRadius="5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Orientation="Horizontal">
+                <ProgressBar IsIndeterminate="True" Width="100" Height="20" Margin="0,0,10,0"/>
+                <TextBlock Text="Cargando datos..." 
+                          FontWeight="SemiBold"
+                          VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Lista de asignaciones (solo visible cuando no está cargando) -->
+        <GroupBox Grid.Row="2" 
+                 Header="📋 Todas las Asignaciones"
+                 Visibility="{Binding IsBusy, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+            <DataGrid ItemsSource="{Binding UserAssignments}" 
+                     SelectedItem="{Binding SelectedAssignment}"
+                     AutoGenerateColumns="False"
+                     IsReadOnly="True"
+                     SelectionMode="Single"
+                     SelectionUnit="FullRow"
+                     IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID Usuario" Binding="{Binding UserId}" Width="70"/>
+                    <DataGridTextColumn Header="Usuario" Binding="{Binding UserName}" Width="200"/>
+                    <DataGridTextColumn Header="ID Departamento" Binding="{Binding DepartmentId}" Width="100"/>
+                    <DataGridTextColumn Header="Departamento" Binding="{Binding DepartmentName}" Width="200"/>
+                    <DataGridTextColumn Header="Fecha de Asignación" 
+                                      Binding="{Binding AssignedAt, StringFormat=dd/MM/yyyy HH:mm}" 
+                                      Width="150"/>
+                </DataGrid.Columns>
+
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#FF1976D2"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.CellStyle>
+            </DataGrid>
+        </GroupBox>
+
+        <!-- Mensaje de estado y estadísticas -->
+        <Grid Grid.Row="3" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Mensaje de estado -->
+            <Border Grid.Column="0"
+                    Background="{Binding StatusMessage, Converter={StaticResource StatusMessageToBackgroundConverter}}"
+                    BorderBrush="LightGray" 
+                    BorderThickness="1"
+                    Padding="10,5"
+                    CornerRadius="5"
+                    Margin="0,0,10,0">
+                <TextBlock Text="{Binding StatusMessage}"
+                          FontStyle="Italic"
+                          TextWrapping="Wrap"
+                          Foreground="{Binding StatusMessage, Converter={StaticResource StatusMessageToForegroundConverter}}"/>
+            </Border>
+
+            <!-- Estadísticas -->
+            <StackPanel Grid.Column="1" Orientation="Vertical">
+                <TextBlock Text="{Binding UserAssignments.Count, StringFormat='Asignaciones: {0}'}" 
+                          FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding AllUsers.Count, StringFormat='Usuarios: {0}'}" 
+                          FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding AllDepartments.Count, StringFormat='Departamentos: {0}'}" 
+                          FontWeight="SemiBold"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

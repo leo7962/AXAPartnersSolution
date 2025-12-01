@@ -1,0 +1,16 @@
+﻿<Application x:Class="Presentation.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Presentation.Converters">
+    <Application.Resources>
+        <converters:StatusMessageToBackgroundConverter x:Key="StatusMessageToBackgroundConverter"/>
+        <converters:StatusMessageToForegroundConverter x:Key="StatusMessageToForegroundConverter"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:BooleanToBrushConverter x:Key="BooleanToBrushConverter"/>
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <converters:BooleanToSaveButtonConverter x:Key="BooleanToSaveButtonConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+    </Application.Resources>
+</Application>
