@@ -302,8 +302,8 @@ namespace Presentation.ViewModels
             // Validar Teléfono (solo requerido)
             PhoneError = string.IsNullOrWhiteSpace(Phone)
                 ? "El teléfono es requerido"
-                : string.Empty;            
-        }        
+                : string.Empty;
+        }
 
         private void LoadUserData(UserDto user)
         {

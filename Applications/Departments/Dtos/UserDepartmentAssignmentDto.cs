@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Applications.Departments.Dtos
+﻿namespace Applications.Departments.Dtos
 {
     public class UserDepartmentAssignmentDto
     {

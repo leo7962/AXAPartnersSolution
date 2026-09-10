@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Shared.Common
+﻿namespace Shared.Common
 {
     public class Result
     {
